@@ -112,11 +112,12 @@ public class ChatServer {
                 if (out != null) {
                     writers.remove(out);
                 }
+                String ip = socket.getLocalAddress().toString().substring(1) + ":" + socket.getPort();
                 if (name != null) {
-                    System.out.println(name + " is leaving");
+                    System.out.println("[" + ip + "] " + name + " is leaving");
                     names.remove(name);
                     for (PrintWriter writer : writers) {
-                        writer.println("SERVERMESSAGE ~" + name + "has left~");
+                        writer.println("SERVERMESSAGE ~" + name + " has left~");
                     }
                 }
                 try {
