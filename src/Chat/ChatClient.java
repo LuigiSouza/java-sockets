@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import java.awt.Color;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -16,7 +17,6 @@ import javax.swing.text.StyledDocument;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
@@ -41,8 +41,8 @@ public class ChatClient {
     PrintWriter out;
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
-    JTextArea messageArea = new JTextArea(16, 50);
     JTextPane textPane = new JTextPane();
+
     Style style = textPane.addStyle("Style", null);
 
     /**
@@ -56,15 +56,13 @@ public class ChatClient {
         this.serverAddress = serverAddress;
 
         textField.setEditable(false);
-        messageArea.setEditable(false);
 
         textPane.setEditable(false);
-        textPane.setSize(300, 300);
         textPane.setContentType("text");
         textPane.setText("");
+        textPane.setPreferredSize(new Dimension(0, 250));
 
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
-        frame.setSize(300, 300);
         frame.getContentPane().add(new JScrollPane(textPane), BorderLayout.CENTER);
 
         frame.pack();
@@ -79,7 +77,6 @@ public class ChatClient {
     }
 
     private void appendToPane(String msg, Color c) {
-        textPane.setEditable(true);
         StyledDocument sd = textPane.getStyledDocument();
         StyleConstants.setForeground(style, c);
         try {
@@ -87,7 +84,6 @@ public class ChatClient {
         } catch (Exception e) {
             System.out.println(e);
         }
-        textPane.setEditable(false);
     }
 
     private String getName() {
