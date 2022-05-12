@@ -72,11 +72,15 @@ public class ChatServer {
                 while (true) {
                     out.println("SUBMITNAME");
                     name = in.nextLine();
-                    if (name == null) {
+                    if (name == null || name == "null") {
                         return;
                     }
                     synchronized (names) {
-                        if (!name.isBlank() && !names.contains(name)) {
+                        if (name.isBlank())
+                            out.println("NAMEEMPTY");
+                        else if (names.contains(name))
+                            out.println("NAMEUSED " + name);
+                        else {
                             names.add(name);
                             break;
                         }
@@ -88,7 +92,7 @@ public class ChatServer {
                 // But BEFORE THAT, let everyone else know that the new person has joined!
                 out.println("NAMEACCEPTED " + name);
                 for (PrintWriter writer : writers) {
-                    writer.println("MESSAGE " + name + " has joined");
+                    writer.println("MESSAGE ~" + name + " has joined~");
                 }
                 writers.add(out);
 
@@ -99,7 +103,7 @@ public class ChatServer {
                         return;
                     }
                     for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + name + ": " + input);
+                        writer.println("MESSAGE [" + name + "]: " + input);
                     }
                 }
             } catch (Exception e) {
@@ -112,7 +116,7 @@ public class ChatServer {
                     System.out.println(name + " is leaving");
                     names.remove(name);
                     for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + name + " has left");
+                        writer.println("MESSAGE ~" + name + "~ has left");
                     }
                 }
                 try {

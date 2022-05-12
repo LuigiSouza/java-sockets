@@ -67,6 +67,15 @@ public class ChatClient {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
+    private void emptyName() {
+        JOptionPane.showMessageDialog(frame, "The name cannot be null", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void nameUsed(String name) {
+        JOptionPane.showMessageDialog(frame, "The name " + name + " is already being used.", "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+
     private void run() throws IOException {
         try {
             var socket = new Socket(serverAddress, 59001);
@@ -77,6 +86,11 @@ public class ChatClient {
                 var line = in.nextLine();
                 if (line.startsWith("SUBMITNAME")) {
                     out.println(getName());
+                } else if (line.startsWith("NAMEEMPTY")) {
+                    emptyName();
+                } else if (line.startsWith("NAMEUSED")) {
+                    String name = line.substring(9);
+                    nameUsed(name);
                 } else if (line.startsWith("NAMEACCEPTED")) {
                     this.frame.setTitle("Chatter - " + line.substring(13));
                     textField.setEditable(true);
