@@ -7,12 +7,18 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import java.awt.Color;
 import java.awt.BorderLayout;
+
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 
 /**
  * A simple Swing-based client for the chat server. Graphically it is a frame
@@ -36,6 +42,8 @@ public class ChatClient {
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
     JTextArea messageArea = new JTextArea(16, 50);
+    JTextPane textPane = new JTextPane();
+    Style style = textPane.addStyle("Style", null);
 
     /**
      * Constructs the client by laying out the GUI and registering a listener with
@@ -49,8 +57,16 @@ public class ChatClient {
 
         textField.setEditable(false);
         messageArea.setEditable(false);
+
+        textPane.setEditable(false);
+        textPane.setSize(300, 300);
+        textPane.setContentType("text");
+        textPane.setText("");
+
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
-        frame.getContentPane().add(new JScrollPane(messageArea), BorderLayout.CENTER);
+        frame.setSize(300, 300);
+        frame.getContentPane().add(new JScrollPane(textPane), BorderLayout.CENTER);
+
         frame.pack();
 
         // Send on enter then clear to prepare for next message
@@ -60,6 +76,18 @@ public class ChatClient {
                 textField.setText("");
             }
         });
+    }
+
+    private void appendToPane(String msg, Color c) {
+        textPane.setEditable(true);
+        StyledDocument sd = textPane.getStyledDocument();
+        StyleConstants.setForeground(style, c);
+        try {
+            sd.insertString(sd.getLength(), msg, style);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        textPane.setEditable(false);
     }
 
     private String getName() {
@@ -94,8 +122,10 @@ public class ChatClient {
                 } else if (line.startsWith("NAMEACCEPTED")) {
                     this.frame.setTitle("Chatter - " + line.substring(13));
                     textField.setEditable(true);
+                } else if (line.startsWith("SERVERMESSAGE")) {
+                    appendToPane(line.substring(14) + "\n", Color.BLUE);
                 } else if (line.startsWith("MESSAGE")) {
-                    messageArea.append(line.substring(8) + "\n");
+                    appendToPane(line.substring(8) + "\n", Color.BLACK);
                 }
             }
             socket.close();
